@@ -4,8 +4,8 @@ const router = express.Router();
 
 const Post = require('../models/Post');
 
-var redisClient = require('redis').createClient;
-var redis = redisClient(6379, 'localhost');
+// var redisClient = require('redis').createClient;
+// var redis = redisClient(6379, 'localhost');
 
 //Request to list all posts in MongoDB
 router.get('/', async (req, res) =>{
