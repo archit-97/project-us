@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const bodyParser = require('body-parser');
 
-//Using Redis client to setup connection to local redis server cache
+// Using Redis client to setup connection to local redis server cache
 // var redisClient = require('redis').createClient;
 // var redis = redisClient(6379, 'localhost');
 
@@ -34,7 +34,7 @@ app.use('/jobs', jobsRoute);
 // 	console.log('connected to DB!')
 // });
 
-// //Check connection to Redis Cache
+//Check connection to Redis Cache
 // redis.on("connect", () => {
 //     console.log('connected to Redis');
 // });

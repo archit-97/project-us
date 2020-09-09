@@ -8,8 +8,8 @@ const Job = require('../models/Job');
 const Post = require('../models/Post');
 
 //Using Redis client to setup connection to local redis server cache
-var redisClient = require('redis').createClient;
-var redis = redisClient(6379, 'localhost');
+// var redisClient = require('redis').createClient;
+// var redis = redisClient(6379, 'localhost');
 
 //URL to get back all the jobs as present in MongoDB
 router.get('/', async(req, res) =>{
