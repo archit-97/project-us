@@ -7,8 +7,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 //Using Redis client to setup connection to local redis server cache
-var redisClient = require('redis').createClient;
-var redis = redisClient(6379, 'localhost');
+// var redisClient = require('redis').createClient;
+// var redis = redisClient(6379, 'localhost');
 
 //.env file contains database link URL
 require('dotenv').config({ path: `./.env.local` });
@@ -27,16 +27,16 @@ app.get('/', (req, res) =>{
 app.use('/posts', postsRoute);
 app.use('/jobs', jobsRoute);
 
-//Check connection to MongoDB
-mongoose.connect(process.env.DB_CONNECTION, 
-	{ useNewUrlParser: true, useUnifiedTopology: true}, 
-	() =>{
-	console.log('connected to DB!')
-});
+// //Check connection to MongoDB
+// mongoose.connect(process.env.DB_CONNECTION, 
+// 	{ useNewUrlParser: true, useUnifiedTopology: true}, 
+// 	() =>{
+// 	console.log('connected to DB!')
+// });
 
-//Check connection to Redis Cache
-redis.on("connect", () => {
-    console.log('connected to Redis');
-});
+// //Check connection to Redis Cache
+// redis.on("connect", () => {
+//     console.log('connected to Redis');
+// });
 
 app.listen(3000);
