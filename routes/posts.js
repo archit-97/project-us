@@ -4,24 +4,31 @@ const router = express.Router();
 
 const Post = require('../models/Post');
 
-// var redisClient = require('redis').createClient;
-// var redis = redisClient(6379, 'localhost');
 
-//Request to list all posts in MongoDB
-router.get('/', async (req, res) =>{
-	try{
-		const posts = await Post.find();
-		res.status(200);
-		res.json(posts);
-	}catch(err){
-		res.status(500);
-		res.json({message: err});
+function nearby(diff){
+	var c = diff.toString().length;
+	var result = [];
+	if(c < 2){
+		return result;
 	}
-});
-
-function createfunction1(req){
-	// console.log(req.body.question);
-	return req.body.question;
+	var poss = [];
+	for(var i=1; i<c; i++){
+		poss.push(100/Math.pow(10, i));
+	}
+	while(result.length != 4){
+		lmax = poss.length-1;
+		lmin = 0;
+		var a = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
+		lmax = diff + Math.floor(poss[a]*diff/100);
+		lmin = diff - Math.floor(poss[a]*diff/100);
+		// console.log(lmax, lmin);
+		var b = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
+		if(b in result){
+			continue;
+		}
+		result.push(b);
+	}
+	return result;
 }
 
 function totalrandom(diff){
@@ -36,52 +43,31 @@ function totalrandom(diff){
 		}
 		result.push(a);
 	}
-	a = Math.floor(Math.random() * (3 - 0 + 1) + 0);
-	result[a] = diff;
+	// a = Math.floor(Math.random() * (3 - 0 + 1) + 0);
+	// result[a] = diff;
 	return result;
 }
 
-function permutedoptions(t){
-	var permutation = [];
-	while(t != 0){
-		permutation.push(t%10);
-		t = t/10;
+function compromise(diff){
+	var r1 = nearby(diff), r2 = totalrandom(diff), result = [], c = 0;
+	// console.log(r1);
+	// console.log(r2);
+	if(r1.length == 0){
+		result = r2;
 	}
-	console.log(permutation);
-	permutation.reverse();
-	var length = permutation.length, 
-	result = [permutation.slice()], 
-	c = new Array(length).fill(0), 
-	i = 1, k, p;
-
-	while(i < length){
-		if(c[i] < i){
-			k = i % 2 && c[i];
-			p = permutation[i];
-			permutation[i] = permutation[k];
-			permutation[k] = p;
-			++c[i];
-			i = 1;
-			console.log(permutation.slice());
-			result.push(permutation.slice());
+	while(result.length != 4){
+		var a = Math.floor(Math.random() * (1 - 0 + 1) + 0);
+		if(a == 0){
+			result.push(r1[c]);
 		}
 		else{
-			c[i] = 0;
-			++i;
+			result.push(r2[c]);
 		}
+		c++;
 	}
-	var processed = [];
-	for(i=0; i<result.length; i++){
-		if(result[0] == 0){
-			continue;
-		}
-		var s=0;
-		for(var j=0; j<result[i].length; j++){
-			s = s*10 + result[i][j];
-		}
-		processed.push(s);
-	}
-	return processed;
+	a = Math.floor(Math.random() * (3 - 0 + 1) + 0);
+	result[a] = diff;
+	return result;
 }
 
 function checkit(m, s){
@@ -109,7 +95,7 @@ function minit(p){
 	return Math.pow(10, p-1);
 }
 
-//Request to create a new post in MongoDB 
+//Request to generate and return a question bank based on the given inputs and constraints 
 router.post('/', async (req, res) =>{
 	// console.log(req.body.question);
 	const f = req.body.minuend;
@@ -130,100 +116,10 @@ router.post('/', async (req, res) =>{
 		m.push(a);
 		s.push(b);
 		ans.push(a-b);
-		op.push(totalrandom(a-b));
+		op.push(compromise(a-b));
 		// op.push(permutedoptions(a-b));
 	}
 	res.json({minuend: m, subtrahend: s, correct_answer: ans, option: op});
-	// const post = new Post({
-	// 	title: req.body.title,
-	// 	description: req.body.description
-	// });
-
-	// try{
-	// 	const savedPost = await post.save();
-	// 	res.status(200);
-	// 	res.json(savedPost);
-	// } catch(err){
-	// 	res.status(500);
-	// 	res.json({message: err});
-	// }
 });
-
-//URL to get back a specific post with the given postId
-router.get('/:postId', async (req, res) =>{
-	try {
-		//First checks for a hit in the redis cache
-		redis.get(req.params.postId, async (err, reply) =>{
-			if(err){
-				console.log(err);
-				res.status(500);
-				res.json({message: err});
-			}
-			else if(reply){
-				console.log(reply);
-				res.status(200);
-				res.json(reply);
-			}
-			else{
-				//If there is a miss, check in the MongoDB and update cache accordingly
-				const post = await Post.findById(req.params.postId);
-				redis.set(req.params.postId, JSON.stringify(post));
-				redis.expire(req.params.postId, 3000);
-				res.status(200);
-				res.json(post);
-			}
-		})
-	}catch(err){
-		res.status(500);
-		res.json({message: err});
-	}
-});
-
-//URL to delete a specific post with the given postId
-router.delete('/:postId', async (req, res) =>{
-	try {
-		//Delete post from MongoDB as well as redis cache if present
-		const removedPost = await Post.remove({_id: req.params.postId});
-		redis.del(req.params.postId, function(err, reply){
-			console.log(reply);
-		});
-		res.status(200);
-		res.json(removedPost);
-	}catch(err){
-		res.status(500);
-		res.json({message: err});
-	}
-});
-
-//URL to update a specific post's title as given in postId
-router.patch('/:postId', async (req, res) =>{
-	try {
-		//Update post title in MongoDB
-		const updatepost = await Post.findOneAndUpdate(
-			{_id: req.params.postId},
-			{$set: {title: req.body.title}},
-			{new: true}, function(err, doc){
-				if(err){
-					res.status(500);
-					res.json({message: err});
-				}
-				else if(!doc){
-					res.status(400);
-					console.log("Missing doc");
-				}
-				else{
-					//Update post title in redis cache as well
-					redis.set(req.params.postId, JSON.stringify(doc));
-					redis.expire(req.params.postId, 3000);
-					res.status(200);
-					res.json(doc);
-				}
-			}
-			);
-	}catch(err){
-		res.status(500);
-		res.json({message: err});
-	}
-})
 
 module.exports = router;
