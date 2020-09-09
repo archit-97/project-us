@@ -21,9 +21,12 @@ function nearby(diff){
 		var a = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
 		lmax = diff + Math.ceil(poss[a]*diff/100);
 		lmin = diff - Math.ceil(poss[a]*diff/100);
+		if(lmax - lmin == 2){
+			lmax = lmax + 1;
+		}
 		// console.log(lmax, lmin);
 		var b = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
-		if(!result.includes(b) && b != diff){
+		if(b != diff && !result.includes(b)){
 			result.push(b);
 		}
 	}
@@ -37,7 +40,7 @@ function totalrandom(diff){
 	lmin = minit(c);
 	while(result.length != 4){
 		var a = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
-		if(!result.includes(a) && a != diff){
+		if(a != diff && !result.includes(a)){
 			result.push(a);
 		}
 	}
