@@ -37,7 +37,7 @@ function nearby(diff){
 	return result;
 }
 
-//Function to return totally random 4 options for a correct answer
+//Function to return totally random 4 options for diff
 function totalrandom(diff){
 	var c=diff.toString().length;
 	var result = [];
@@ -66,10 +66,20 @@ function compromise(diff){
 		//Choose a nearby option or totally random option based on var a
 		var a = Math.floor(Math.random() * (1 - 0 + 1) + 0);
 		if(a == 0){
-			result.push(r1[c]);
+			if(!result.includes(r1[c])){
+				result.push(r1[c]);
+			}
+			else{
+				result.push(r2[c]);
+			}
 		}
 		else{
-			result.push(r2[c]);
+			if(!result.includes(r2[c])){
+				result.push(r2[c]);
+			}
+			else{
+				result.push(r1[c]);
+			}
 		}
 		c++;
 	}
