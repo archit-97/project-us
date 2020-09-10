@@ -14,7 +14,7 @@ const postsRoute = require('./routes/posts');
 
 //Defining Routes
 app.get('/', (req, res) =>{
-	res.send('Home page of Subtraction API');
+	res.send('Home page of Subtraction API. Please visit https://github.com/archit522/Subtraction_API for detailed instructions on using the API');
 });
 
 app.use('/posts', postsRoute);

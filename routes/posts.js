@@ -164,4 +164,8 @@ router.post('/', async (req, res) =>{
 	res.json({minuend: m, subtrahend: s, correct_answer: ans, option: op});
 });
 
+router.get('/', async(req, res) =>{
+	res.send("You are at Posts page of Subtraction API. Please make a POST request with an input. For detailed instructions visit https://github.com/archit522/Subtraction_API")
+});
+
 module.exports = router;
