@@ -16,6 +16,7 @@ function nearby(diff){
 	for(var i=1; i<c; i++){
 		poss.push(100/Math.pow(10, i));
 	}
+	console.log(diff);
 	while(result.length != 4){
 		lmax = poss.length-1;
 		lmin = 0;
@@ -26,7 +27,7 @@ function nearby(diff){
 		lmin = diff - Math.ceil(poss[a]*diff/100);
 		//Special condition for diff=10
 		if(lmax - lmin < 3){
-			lmax = lmax + 1;
+			lmax = lmax + 2;
 		}
 		//Calculate nearby option in selected range
 		var b = Math.floor(Math.random() * (lmax - lmin + 1) + lmin);
